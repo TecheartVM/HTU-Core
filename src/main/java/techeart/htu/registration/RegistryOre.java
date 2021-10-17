@@ -1,6 +1,7 @@
 package techeart.htu.registration;
 
 import com.google.common.collect.Maps;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -12,9 +13,6 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
 import techeart.htu.objects.BlockPropertiesPatterns;
-import techeart.htu.objects.HTUBlock;
-import techeart.htu.objects.HTUItem;
-import techeart.htu.objects.HTUItemBlock;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -34,20 +32,20 @@ public class RegistryOre
     }
 
     public Map<String, RegistryBlock> getOreBlocks() { return oreBlocks; }
-    public HTUBlock getOreBlock(String suffix)
+    public Block getOreBlock(String suffix)
     {
         RegistryBlock rb = oreBlocks.get(suffix);
-        return rb == null ? (HTUBlock) Blocks.AIR : rb.getBlock();
+        return rb == null ? Blocks.AIR : rb.getBlock();
     }
-    public HTUItemBlock getOreBlockItem(String suffix)
+    public BlockItem getOreBlockItem(String suffix)
     {
         RegistryBlock rb = oreBlocks.get(suffix);
-        return rb == null ? (HTUItemBlock) Items.AIR : rb.getItem();
+        return rb == null ? (BlockItem) Items.AIR : rb.getItem();
     }
-    public HTUBlock getRawBlock() { return rawBlock.getBlock(); }
-    public HTUItemBlock getRawBlockItem() { return rawBlock.getItem(); }
-    public HTUItem getRawItem() { return rawItem.get(); }
-    public HTUItem getDustItem() { return dust == null ? (HTUItem) Items.AIR : dust.get(); }
+    public Block getRawBlock() { return rawBlock.getBlock(); }
+    public BlockItem getRawBlockItem() { return rawBlock.getItem(); }
+    public Item getRawItem() { return rawItem.get(); }
+    public Item getDustItem() { return dust == null ? Items.AIR : dust.get(); }
 
     private void addOreBlock(String suffix, RegistryBlock block) { oreBlocks.put(suffix, block); }
 

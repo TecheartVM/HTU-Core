@@ -1,5 +1,6 @@
 package techeart.htu.registration;
 
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -8,9 +9,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
 import techeart.htu.objects.BlockPropertiesPatterns;
-import techeart.htu.objects.HTUBlock;
-import techeart.htu.objects.HTUItemBlock;
-import techeart.htu.objects.HTUItem;
 
 import javax.annotation.Nullable;
 
@@ -36,14 +34,14 @@ public class RegistryMetal
         this.dustUnrefined = unrefined;
     }
 
-    public HTUBlock getBlock() { return block.getBlock(); }
-    public HTUItemBlock getBlockItem() { return block.getItem(); }
-    public HTUItem getIngot() { return ingot.get(); }
-    public HTUItem getNugget() { return nugget.get(); }
-    public HTUItem getPlate() { return plate.get(); }
-    public HTUItem getRod() { return rod.get(); }
-    public HTUItem getDust() { return dust.get(); }
-    public HTUItem getDustUnrefined() { return dustUnrefined == null ? (HTUItem) Items.AIR : dustUnrefined.get(); }
+    public Block getBlock() { return block.getBlock(); }
+    public BlockItem getBlockItem() { return block.getItem(); }
+    public Item getIngot() { return ingot.get(); }
+    public Item getNugget() { return nugget.get(); }
+    public Item getPlate() { return plate.get(); }
+    public Item getRod() { return rod.get(); }
+    public Item getDust() { return dust.get(); }
+    public Item getDustUnrefined() { return dustUnrefined == null ? Items.AIR : dustUnrefined.get(); }
 
     public static class Builder
     {
