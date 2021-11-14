@@ -1,4 +1,4 @@
-package techeart.htu.objects;
+package techeart.htu.utils;
 
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour.*;

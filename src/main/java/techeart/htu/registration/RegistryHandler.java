@@ -5,6 +5,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
@@ -13,13 +14,17 @@ import net.minecraft.world.entity.decoration.Motive;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.schedule.Schedule;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
@@ -35,9 +40,15 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.world.ForgeWorldType;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DataSerializerEntry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import techeart.htu.registration.units.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class RegistryHandler
 {
@@ -76,6 +87,8 @@ public class RegistryHandler
     private final DeferredRegister<TreeDecoratorType<?>>            TREE_DECORATOR_TYPES;
     private final DeferredRegister<WorldCarver<?>>                  WORLD_CARVERS;
     private final DeferredRegister<ForgeWorldType>                  WORLD_TYPES;
+
+    private static final Map<Supplier<Item>, Float> CUSTOM_COMPOSTABLES = new HashMap<>();
 
     private final String modid;
 
@@ -162,5 +175,33 @@ public class RegistryHandler
         TREE_DECORATOR_TYPES.register(bus);
         WORLD_CARVERS.register(bus);
         WORLD_TYPES.register(bus);
+
+        for (Supplier<Item> item : CUSTOM_COMPOSTABLES.keySet())
+            ComposterBlock.COMPOSTABLES.put(item.get(), CUSTOM_COMPOSTABLES.get(item));
+    }
+
+    public CreativeModeTab registerCreativeTab(Item icon)
+    {
+        return new CreativeModeTab(modid)
+        {
+            @Override
+            public ItemStack makeIcon() { return new ItemStack(icon); }
+        };
+    }
+
+    public static void addCompostableItem(Supplier<Item> item, float gain) { CUSTOM_COMPOSTABLES.put(item, gain); }
+
+    private RegistryObject<EntityType<Boat>> boatEntityType;
+    public void createBoatType() throws Exception
+    {
+        if(boatEntityType == null)
+            boatEntityType = ENTITIES.register(
+                    "boat",
+                    () -> EntityType.Builder.<Boat>of(RegistryBoat.EntityBoat::new, MobCategory.MISC)
+                        .sized(1.375f, 0.5625f)
+                        .clientTrackingRange(10)
+                        .build("boat")
+            );
+        else throw new Exception("Duplicate boat registry object!");
     }
 }

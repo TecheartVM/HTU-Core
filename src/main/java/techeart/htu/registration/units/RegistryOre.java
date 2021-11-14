@@ -1,4 +1,4 @@
-package techeart.htu.registration;
+package techeart.htu.registration.units;
 
 import com.google.common.collect.Maps;
 import net.minecraft.world.item.BlockItem;
@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
-import techeart.htu.objects.BlockPropertiesPatterns;
+import techeart.htu.utils.BlockPropertiesPatterns;
 
 import javax.annotation.Nullable;
 import java.util.Map;

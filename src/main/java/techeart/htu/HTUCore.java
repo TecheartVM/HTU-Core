@@ -10,12 +10,12 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import techeart.htu.registration.RegistryBlock;
+import techeart.htu.registration.units.RegistryBlock;
 import techeart.htu.registration.RegistryHandler;
 
 
 @Mod("htucore")
-public class MainClass
+public class HTUCore
 {
     public static final String MODID = "htucore";
 
@@ -24,7 +24,7 @@ public class MainClass
 
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public MainClass()
+    public HTUCore()
     {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 

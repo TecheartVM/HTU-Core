@@ -1,4 +1,4 @@
-package techeart.htu.registration;
+package techeart.htu.registration.units;
 
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;

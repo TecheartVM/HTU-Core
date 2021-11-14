@@ -1,4 +1,4 @@
-package techeart.htu.registration;
+package techeart.htu.registration.units;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
-import techeart.htu.objects.BlockPropertiesPatterns;
+import techeart.htu.utils.BlockPropertiesPatterns;
 
 import javax.annotation.Nullable;
 
