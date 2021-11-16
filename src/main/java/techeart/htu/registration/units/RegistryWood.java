@@ -1,9 +1,10 @@
 package techeart.htu.registration.units;
 
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
@@ -75,7 +76,7 @@ public class RegistryWood
         if(leaves != null) RegistryHandler.addCompostableItem(leaves::getItem, 0.3f);
         if(sapling != null) RegistryHandler.addCompostableItem(sapling::getItem, 0.3f);
 
-        if(boat != null) DispenserBlock.registerBehavior(boat::getItem, new BoatDispenserBehavior(boat));
+        if(boat != null) DispenserBlock.registerBehavior(boat::getItem, new BoatDispenseItemBehavior(Boat.Type.OAK));
 
         initRenderers();
     }
@@ -120,8 +121,10 @@ public class RegistryWood
         public Builder withRedstoneTab(CreativeModeTab tab) { redstoneTab = tab; return this; }
         public Builder withBoatTab(CreativeModeTab tab) { boatTab = tab; return this; }
 
-        public RegistryWood build(String name, String modid, DeferredRegister<Block> br, DeferredRegister<Item> ir,
-                                  DeferredRegister<BlockEntityType<?>> ber, DeferredRegister<EntityType<?>> er)
+        public RegistryWood build(String name, String modid, RegistryHandler rh,
+                                  DeferredRegister<Block> br, DeferredRegister<Item> ir,
+                                  DeferredRegister<BlockEntityType<?>> ber, DeferredRegister<EntityType<?>> er
+        )
         {
             WoodType woodType = WoodType.create(modid + ":" + name);
 
@@ -193,7 +196,7 @@ public class RegistryWood
                         .withCreativeTab(redstoneTab)
                         .build("plate_" + name, br, ir);
                 sign = new RegistrySign(woodType, planksProps, woodTab, br, ir, ber);
-                boat = new RegistryBoat();
+                boat = new RegistryBoat(name, boatTab, rh, ir);
             }
 
             final RegistryBlock strippedLog1 = strippedLog;
@@ -256,7 +259,6 @@ public class RegistryWood
             RenderHandler.setBlockRenderType(saplingPotted, RenderType.cutout());
         }
 //        RenderHandler.setBlockEntityRenderer(sign.getBlockEntityType(), SignRenderer::new);
-        RenderHandler.setEntityRenderer(boat.getType(), HEBoatRenderer::new);
     }
 
     private static BlockBehaviour.Properties createLogProps(float strength, SoundType sound, MaterialColor colorTop, MaterialColor colorSide)
@@ -277,5 +279,100 @@ public class RegistryWood
                 .isValidSpawn((state, level, pos, entity) -> false)
                 .isSuffocating((state, level, pos) -> false)
                 .isViewBlocking((state, level, pos) -> false);
+    }
+
+    public WoodType getType()
+    {
+        return type;
+    }
+
+    public RegistryBlock getLog()
+    {
+        return log;
+    }
+
+    public RegistryBlock getWood()
+    {
+        return wood;
+    }
+
+    public RegistryBlock getStrippedLog()
+    {
+        return strippedLog;
+    }
+
+    public RegistryBlock getStrippedWood()
+    {
+        return strippedWood;
+    }
+
+    public RegistryBlock getPlanks()
+    {
+        return planks;
+    }
+
+    public RegistryBlock getStairs()
+    {
+        return stairs;
+    }
+
+    public RegistryBlock getSlab()
+    {
+        return slab;
+    }
+
+    public RegistryBlock getFence()
+    {
+        return fence;
+    }
+
+    public RegistryBlock getGate()
+    {
+        return gate;
+    }
+
+    public RegistryBlock getDoor()
+    {
+        return door;
+    }
+
+    public RegistryBlock getTrapdoor()
+    {
+        return trapdoor;
+    }
+
+    public RegistryBlock getButton()
+    {
+        return button;
+    }
+
+    public RegistryBlock getPlate()
+    {
+        return plate;
+    }
+
+    public RegistryBlock getLeaves()
+    {
+        return leaves;
+    }
+
+    public RegistryBlock getSapling()
+    {
+        return sapling;
+    }
+
+    public RegistryBlock getSaplingPotted()
+    {
+        return saplingPotted;
+    }
+
+    public RegistrySign getSign()
+    {
+        return sign;
+    }
+
+    public RegistryBoat getBoat()
+    {
+        return boat;
     }
 }

@@ -2,6 +2,9 @@ package techeart.htu.registration.units;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -22,32 +25,42 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.minecraftforge.registries.DeferredRegister;
 import techeart.htu.registration.RegistryHandler;
+import techeart.htu.render.CustomBoatRenderer;
+import techeart.htu.utils.RenderHandler;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class RegistryBoat
 {
-    private final net.minecraft.world.item.Item item;
+    private final Item item;
+    private final Supplier<EntityType<Boat>> entityType;
 
     public RegistryBoat(String name, CreativeModeTab tab, RegistryHandler rh, DeferredRegister<Item> ir)
     {
-        item = new ItemBoat(name, tab, rh.getOrCreateBoatType());
+        entityType = rh.getBoatEntityType();
+        item = new ItemBoat(name, tab, entityType);
         ir.register("boat_" + name, () -> item);
+
+        RenderHandler.setEntityRenderer(entityType.get(), CustomBoatRenderer::new);
     }
 
-    public net.minecraft.world.item.Item getItem() { return item; }
+    public EntityType<Boat> getType() { return entityType.get(); }
+
+    public Item getItem() { return item; }
 
     public static class EntityBoat extends Boat
     {
+        private static final EntityDataAccessor<String> TYPE = SynchedEntityData.defineId(EntityBoat.class, EntityDataSerializers.STRING);
         private ItemBoat boatItem;
 
         //used by type registration method
-        public EntityBoat(EntityType<? extends Boat> type, Level world) { super(type, world); }
+        public EntityBoat(EntityType<? extends Boat> type, Level level) { super(type, level); }
 
-        public EntityBoat(ItemBoat item, EntityType<? extends Boat> type, Level world, double x, double y, double z)
+        public EntityBoat(ItemBoat item, EntityType<? extends Boat> type, Level level, double x, double y, double z)
         {
-            super(type, world);
+            super(type, level);
             setPos(x, y, z);
             xo = x;
             yo = y;
@@ -55,6 +68,16 @@ public class RegistryBoat
             setDeltaMovement(Vec3.ZERO);
             boatItem = item;
         }
+
+        @Override
+        protected void defineSynchedData()
+        {
+            super.defineSynchedData();
+            entityData.define(TYPE, "none");
+        }
+
+        public void setTypeData(String type) { entityData.set(TYPE, type); }
+        public String getTypeData() { return entityData.get(TYPE); }
 
         @Override
         public Item getDropItem() { return boatItem == null ? super.getDropItem() : boatItem; }
@@ -69,9 +92,9 @@ public class RegistryBoat
                 EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
 
         private final String type;
-        private final EntityType<Boat> entityType;
+        private final Supplier<EntityType<Boat>> entityType;
 
-        public ItemBoat(String type, CreativeModeTab tab, EntityType<Boat> entityType)
+        public ItemBoat(String type, CreativeModeTab tab, Supplier<EntityType<Boat>> entityType)
         {
             super(new Properties().stacksTo(1).tab(tab));
             this.type = type;
@@ -104,8 +127,8 @@ public class RegistryBoat
 
                 if (hitresult.getType() == HitResult.Type.BLOCK)
                 {
-                    Boat boat = new EntityBoat(this, level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
-                    boat.setType(this.type);
+                    EntityBoat boat = new EntityBoat(this, entityType.get(), level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
+                    boat.setTypeData(type);
                     boat.setYRot(player.getYRot());
                     if (!level.noCollision(boat, boat.getBoundingBox().inflate(-0.1D))) return InteractionResultHolder.fail(itemstack);
                     else

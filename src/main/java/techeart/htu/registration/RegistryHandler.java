@@ -88,6 +88,8 @@ public class RegistryHandler
     private final DeferredRegister<WorldCarver<?>>                  WORLD_CARVERS;
     private final DeferredRegister<ForgeWorldType>                  WORLD_TYPES;
 
+    private final RegistryObject<EntityType<Boat>> boatEntityType;
+
     private static final Map<Supplier<Item>, Float> CUSTOM_COMPOSTABLES = new HashMap<>();
 
     private final String modid;
@@ -131,6 +133,11 @@ public class RegistryHandler
         TREE_DECORATOR_TYPES = DeferredRegister.create(ForgeRegistries.TREE_DECORATOR_TYPES, modid);
         WORLD_CARVERS = DeferredRegister.create(ForgeRegistries.WORLD_CARVERS, modid);
         WORLD_TYPES = DeferredRegister.create(ForgeRegistries.WORLD_TYPES, modid);
+
+        boatEntityType = ENTITIES.register("boat", () -> EntityType.Builder.<Boat>of(RegistryBoat.EntityBoat::new, MobCategory.MISC)
+                .sized(1.375f, 0.5625f)
+                .clientTrackingRange(10)
+                .build("boat"));
     }
 
     public RegistryBlock register(String blockName, RegistryBlock.Builder blockBuilder) { return blockBuilder.build(blockName, BLOCKS, ITEMS); }
@@ -180,6 +187,8 @@ public class RegistryHandler
             ComposterBlock.COMPOSTABLES.put(item.get(), CUSTOM_COMPOSTABLES.get(item));
     }
 
+    public RegistryObject<EntityType<Boat>> getBoatEntityType() { return boatEntityType; }
+
     public CreativeModeTab registerCreativeTab(Item icon)
     {
         return new CreativeModeTab(modid)
@@ -190,18 +199,4 @@ public class RegistryHandler
     }
 
     public static void addCompostableItem(Supplier<Item> item, float gain) { CUSTOM_COMPOSTABLES.put(item, gain); }
-
-    private RegistryObject<EntityType<Boat>> boatEntityType;
-    public void createBoatType() throws Exception
-    {
-        if(boatEntityType == null)
-            boatEntityType = ENTITIES.register(
-                    "boat",
-                    () -> EntityType.Builder.<Boat>of(RegistryBoat.EntityBoat::new, MobCategory.MISC)
-                        .sized(1.375f, 0.5625f)
-                        .clientTrackingRange(10)
-                        .build("boat")
-            );
-        else throw new Exception("Duplicate boat registry object!");
-    }
 }
