@@ -19,10 +19,10 @@ import java.util.function.Supplier;
 @OnlyIn(Dist.CLIENT)
 public class RenderHandler
 {
-    private static final Map<Supplier<Block>, RenderType> BLOCK_RENDERERS = new HashMap<>();
-    private static final Map<EntityType<? extends Entity>, EntityRendererProvider<Entity>> ENTITY_RENDERERS = new HashMap<>();
+    private final Map<Supplier<Block>, RenderType> BLOCK_RENDERERS = new HashMap<>();
+    private final Map<EntityType<? extends Entity>, EntityRendererProvider<Entity>> ENTITY_RENDERERS = new HashMap<>();
 
-    public static void init()
+    public void init()
     {
         //registering BLOCK render types
         for (Supplier<Block> block : BLOCK_RENDERERS.keySet())
@@ -32,10 +32,10 @@ public class RenderHandler
             EntityRenderers.register(t, ENTITY_RENDERERS.get(t));
     }
 
-    public static void setBlockRenderType(RegistryObject<Block> block, RenderType type) { BLOCK_RENDERERS.put(block, type); }
-    public static void setBlockRenderType(RegistryBlock block, RenderType type) { BLOCK_RENDERERS.put(block::getBlock, type); }
+    public void setBlockRenderType(RegistryObject<Block> block, RenderType type) { BLOCK_RENDERERS.put(block, type); }
+    public void setBlockRenderType(RegistryBlock block, RenderType type) { BLOCK_RENDERERS.put(block::getBlock, type); }
 
-    public static <T extends Entity> void setEntityRenderer(EntityType<? extends T> et, EntityRendererProvider<T> rt)
+    public <T extends Entity> void setEntityRenderer(EntityType<? extends T> et, EntityRendererProvider<T> rt)
     {
         ENTITY_RENDERERS.put(et, (EntityRendererProvider<Entity>) rt);
     }

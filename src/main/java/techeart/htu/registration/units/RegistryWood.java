@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
+import techeart.htu.HTUCore;
 import techeart.htu.objects.WoodStuff.*;
 import techeart.htu.utils.RenderHandler;
 import techeart.htu.registration.RegistryHandler;
@@ -42,7 +43,7 @@ public class RegistryWood
     private final RegistryBlock saplingPotted;
 
     private final RegistrySign sign;
-    private final RegistryBoat boat;
+    private final RegistryItem boat;
 
     public RegistryWood(
             WoodType type,
@@ -50,7 +51,7 @@ public class RegistryWood
             RegistryBlock planks, RegistryBlock stairs, RegistryBlock slab, RegistryBlock fence, RegistryBlock gate,
             RegistryBlock door, RegistryBlock trapdoor, RegistryBlock button, RegistryBlock plate,
             RegistryBlock leaves, RegistryBlock sapling, RegistryBlock saplingPotted,
-            RegistrySign sign, RegistryBoat boat
+            RegistrySign sign, RegistryItem boat
     )
     {
         this.type = type;
@@ -76,8 +77,6 @@ public class RegistryWood
         if(leaves != null) RegistryHandler.addCompostableItem(leaves::getItem, 0.3f);
         if(sapling != null) RegistryHandler.addCompostableItem(sapling::getItem, 0.3f);
 
-        if(boat != null) DispenserBlock.registerBehavior(boat::getItem, new BoatDispenseItemBehavior(Boat.Type.OAK));
-
         initRenderers();
     }
 
@@ -92,10 +91,7 @@ public class RegistryWood
         private MaterialColor leavesColor = MaterialColor.PLANT;
         private SoundType woodSound = SoundType.WOOD;
         private SoundType leavesSound = SoundType.GRASS;
-        private CreativeModeTab woodTab = CreativeModeTab.TAB_BUILDING_BLOCKS;
-        private CreativeModeTab foliageTab = CreativeModeTab.TAB_DECORATIONS;
-        private CreativeModeTab redstoneTab = CreativeModeTab.TAB_REDSTONE;
-        private CreativeModeTab boatTab = CreativeModeTab.TAB_MISC;
+        private CreativeModeTab tab = CreativeModeTab.TAB_BUILDING_BLOCKS;
 
         private AbstractTreeGrower tree = new OakTreeGrower();
 
@@ -116,10 +112,7 @@ public class RegistryWood
 
         public Builder withTreeGrower(AbstractTreeGrower grower) { tree = grower; return this; }
 
-        public Builder withWoodTab(CreativeModeTab tab) { woodTab = tab; return this; }
-        public Builder withFoliageTab(CreativeModeTab tab) { foliageTab = tab; return this; }
-        public Builder withRedstoneTab(CreativeModeTab tab) { redstoneTab = tab; return this; }
-        public Builder withBoatTab(CreativeModeTab tab) { boatTab = tab; return this; }
+        public Builder withTab(CreativeModeTab tab) { tab = tab; return this; }
 
         public RegistryWood build(String name, String modid, RegistryHandler rh,
                                   DeferredRegister<Block> br, DeferredRegister<Item> ir,
@@ -146,57 +139,59 @@ public class RegistryWood
             RegistryBlock sapling = null;
             RegistryBlock saplingPotted = null;
             RegistrySign sign = null;
-            RegistryBoat boat = null;
+            RegistryItem boat_item = null;
             
             if(!unprocessable)
             {
                 strippedLog = new RegistryBlock.Builder()
                         .withSupplier(() -> new AbstractWood(createLogProps(strength, woodSound, coreColor, coreColor), flammability[2], flammability[3]))
-                        .withCreativeTab(woodTab)
+                        .withCreativeTab(tab)
                         .build("log_stripped_" + name, br, ir);
                 strippedWood = new RegistryBlock.Builder()
                         .withSupplier(() -> new AbstractWood(createLogProps(strength, woodSound, coreColor, coreColor), flammability[2], flammability[3]))
-                        .withCreativeTab(woodTab)
+                        .withCreativeTab(tab)
                         .build("wood_stripped_" + name, br, ir);
                 final RegistryBlock planks1 = new RegistryBlock.Builder()
                         .withSupplier(() -> new Planks(planksProps, flammability[2], flammability[3]))
-                        .withCreativeTab(woodTab)
+                        .withCreativeTab(tab)
                         .build("planks_" + name, br, ir);
                 planks = planks1;
                 stairs = new RegistryBlock.Builder()
                         .withSupplier(() -> new Stairs(planks1.getBlock(), flammability[2], flammability[3]))
-                        .withCreativeTab(woodTab)
+                        .withCreativeTab(tab)
                         .build("stairs_" + name, br, ir);
                 slab = new RegistryBlock.Builder()
                         .withSupplier(() -> new Planks(planksProps, flammability[2], flammability[3]))
-                        .withCreativeTab(woodTab)
+                        .withCreativeTab(tab)
                         .build("slab_" + name, br, ir);
                 fence = new RegistryBlock.Builder()
                         .withSupplier(() -> new Fence(planksProps, flammability[2], flammability[3]))
-                        .withCreativeTab(woodTab)
+                        .withCreativeTab(tab)
                         .build("fence_" + name, br, ir);
                 gate = new RegistryBlock.Builder()
                         .withSupplier(() -> new FenceGate(planksProps, flammability[2], flammability[3]))
-                        .withCreativeTab(redstoneTab)
+                        .withCreativeTab(tab)
                         .build("gate_" + name, br, ir);
                 door = new RegistryBlock.Builder()
                         .withSupplier(() -> new DoorBlock(planksProps))
-                        .withCreativeTab(redstoneTab)
+                        .withCreativeTab(tab)
                         .build("door_" + name, br, ir);
                 trapdoor = new RegistryBlock.Builder()
                         .withSupplier(() -> new TrapDoorBlock(planksProps))
-                        .withCreativeTab(redstoneTab)
+                        .withCreativeTab(tab)
                         .build("trapdoor_" + name, br, ir);
                 button = new RegistryBlock.Builder()
                         .withSupplier(() -> new WoodButtonBlock(planksProps))
-                        .withCreativeTab(redstoneTab)
+                        .withCreativeTab(tab)
                         .build("button_" + name, br, ir);
                 plate = new RegistryBlock.Builder()
                         .withSupplier(() -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, planksProps))
-                        .withCreativeTab(redstoneTab)
+                        .withCreativeTab(tab)
                         .build("plate_" + name, br, ir);
-                sign = new RegistrySign(woodType, planksProps, woodTab, br, ir, ber);
-                boat = new RegistryBoat(name, boatTab, rh, ir);
+                sign = new RegistrySign(woodType, planksProps, tab, br, ir, ber);
+                boat_item = new RegistryItem.Builder()
+                        .withSupplier(()-> new RegistryBoat.ItemBoat("none",HTUCore.BOAT_TYPE))
+                        .build("name",ir);
             }
 
             final RegistryBlock strippedLog1 = strippedLog;
@@ -207,7 +202,7 @@ public class RegistryWood
                                 strippedLog1.getBlock()
                             )
                     )
-                    .withCreativeTab(woodTab)
+                    .withCreativeTab(tab)
                     .build("log_" + name, br, ir);
             final RegistryBlock strippedWood1 = strippedWood;
             RegistryBlock wood = new RegistryBlock.Builder()
@@ -217,24 +212,24 @@ public class RegistryWood
                                 strippedWood1.getBlock()
                             )
                     )
-                    .withCreativeTab(woodTab)
+                    .withCreativeTab(tab)
                     .build("wood_" + name, br, ir);
 
             if(!noFoliage)
             {
                  leaves = new RegistryBlock.Builder()
                         .withSupplier(() -> new Leaves(createLeavesProps(leavesSound, leavesColor)))
-                        .withCreativeTab(foliageTab)
+                        .withCreativeTab(tab)
                         .build("leaves_" + name, br, ir);
                  final RegistryBlock sapling1 = new RegistryBlock.Builder()
                          .withSupplier(() -> new SaplingBlock(tree, saplingProps))
-                         .withCreativeTab(foliageTab)
+                         .withCreativeTab(tab)
                          .build("sapling_" + name, br, ir);
                  sapling = sapling1;
                  saplingPotted = new RegistryBlock.Builder()
                          .withSupplier(() -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, sapling1::getBlock,
                                  BlockBehaviour.Properties.of(Material.DECORATION).instabreak().noOcclusion()))
-                         .withCreativeTab(foliageTab)
+                         .withCreativeTab(tab)
                          .noItem()
                          .build("potted_" + name, br, ir);
             }
@@ -244,21 +239,21 @@ public class RegistryWood
                     log, wood, strippedLog, strippedWood,
                     planks, stairs, slab, fence, gate, door, trapdoor, button, plate,
                     leaves, sapling, saplingPotted,
-                    sign, boat
+                    sign, boat_item
             );
         }
     }
 
     private void initRenderers()
     {
-        RenderHandler.setBlockRenderType(door, RenderType.cutout());
-        RenderHandler.setBlockRenderType(trapdoor, RenderType.cutout());
+        HTUCore.RENDER_HANDLER.setBlockRenderType(door, RenderType.cutout());
+        HTUCore.RENDER_HANDLER.setBlockRenderType(trapdoor, RenderType.cutout());
         if (sapling != null)
         {
-            RenderHandler.setBlockRenderType(sapling, RenderType.cutout());
-            RenderHandler.setBlockRenderType(saplingPotted, RenderType.cutout());
+            HTUCore.RENDER_HANDLER.setBlockRenderType(sapling, RenderType.cutout());
+            HTUCore.RENDER_HANDLER.setBlockRenderType(saplingPotted, RenderType.cutout());
         }
-//        RenderHandler.setBlockEntityRenderer(sign.getBlockEntityType(), SignRenderer::new);
+//        HTUCore.RENDER_HANDLER.setBlockEntityRenderer(sign.getBlockEntityType(), SignRenderer::new);
     }
 
     private static BlockBehaviour.Properties createLogProps(float strength, SoundType sound, MaterialColor colorTop, MaterialColor colorSide)
@@ -371,7 +366,7 @@ public class RegistryWood
         return sign;
     }
 
-    public RegistryBoat getBoat()
+    public RegistryItem getBoat()
     {
         return boat;
     }

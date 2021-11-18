@@ -23,11 +23,11 @@ public class CustomBoatRenderer extends BoatRenderer
     public Pair<ResourceLocation, BoatModel> getModelWithLocation(Boat entity)
     {
         RegistryBoat.EntityBoat boat = (RegistryBoat.EntityBoat) entity;
+        String[] type = boat.getMaterial().split(":");
         return Pair.of(
                 new ResourceLocation(
-                        // namespace is required to determine from which module this boat is
-                        boat.getType().getRegistryName().getNamespace(),
-                        "textures/entity/boats/" + boat.getTypeData() + ".png"
+                        type[0],
+                        "textures/entity/boats/" + type[1] + ".png"
                 ),
                 model
         );

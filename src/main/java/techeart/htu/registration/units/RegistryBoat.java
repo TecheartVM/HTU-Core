@@ -18,12 +18,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.minecraftforge.registries.DeferredRegister;
+import techeart.htu.HTUCore;
 import techeart.htu.registration.RegistryHandler;
 import techeart.htu.render.CustomBoatRenderer;
 import techeart.htu.utils.RenderHandler;
@@ -34,22 +37,6 @@ import java.util.function.Supplier;
 
 public class RegistryBoat
 {
-    private final Item item;
-    private final Supplier<EntityType<Boat>> entityType;
-
-    public RegistryBoat(String name, CreativeModeTab tab, RegistryHandler rh, DeferredRegister<Item> ir)
-    {
-        entityType = rh.getBoatEntityType();
-        item = new ItemBoat(name, tab, entityType);
-        ir.register("boat_" + name, () -> item);
-
-        RenderHandler.setEntityRenderer(entityType.get(), CustomBoatRenderer::new);
-    }
-
-    public EntityType<Boat> getType() { return entityType.get(); }
-
-    public Item getItem() { return item; }
-
     public static class EntityBoat extends Boat
     {
         private static final EntityDataAccessor<String> TYPE = SynchedEntityData.defineId(EntityBoat.class, EntityDataSerializers.STRING);
@@ -73,11 +60,12 @@ public class RegistryBoat
         protected void defineSynchedData()
         {
             super.defineSynchedData();
-            entityData.define(TYPE, "none");
+            // modID is required to determine from which module this boat is
+            entityData.define(TYPE, HTUCore.MODID+":none");
         }
 
-        public void setTypeData(String type) { entityData.set(TYPE, type); }
-        public String getTypeData() { return entityData.get(TYPE); }
+        public void setMaterial(String type) { entityData.set(TYPE, type); }
+        public String getMaterial() { return entityData.get(TYPE); }
 
         @Override
         public Item getDropItem() { return boatItem == null ? super.getDropItem() : boatItem; }
@@ -92,12 +80,12 @@ public class RegistryBoat
                 EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
 
         private final String type;
-        private final Supplier<EntityType<Boat>> entityType;
+        private final EntityType<? extends Boat> entityType;
 
-        public ItemBoat(String type, CreativeModeTab tab, Supplier<EntityType<Boat>> entityType)
+        public ItemBoat(String material, EntityType<? extends Boat> entityType)
         {
-            super(new Properties().stacksTo(1).tab(tab));
-            this.type = type;
+            super(new Properties().stacksTo(1));
+            this.type = material;
             this.entityType = entityType;
         }
 
@@ -127,8 +115,8 @@ public class RegistryBoat
 
                 if (hitresult.getType() == HitResult.Type.BLOCK)
                 {
-                    EntityBoat boat = new EntityBoat(this, entityType.get(), level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
-                    boat.setTypeData(type);
+                    EntityBoat boat = new EntityBoat(this, entityType, level, hitresult.getLocation().x, hitresult.getLocation().y, hitresult.getLocation().z);
+                    boat.setMaterial(getCreatorModId(getDefaultInstance())+':'+type);
                     boat.setYRot(player.getYRot());
                     if (!level.noCollision(boat, boat.getBoundingBox().inflate(-0.1D))) return InteractionResultHolder.fail(itemstack);
                     else

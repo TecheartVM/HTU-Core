@@ -1,9 +1,11 @@
 package techeart.htu.registration;
 
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatType;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -44,6 +46,7 @@ import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DataSerializerEntry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import techeart.htu.HTUCore;
 import techeart.htu.registration.units.*;
 
 import java.util.HashMap;
@@ -88,8 +91,6 @@ public class RegistryHandler
     private final DeferredRegister<WorldCarver<?>>                  WORLD_CARVERS;
     private final DeferredRegister<ForgeWorldType>                  WORLD_TYPES;
 
-    private final RegistryObject<EntityType<Boat>> boatEntityType;
-
     private static final Map<Supplier<Item>, Float> CUSTOM_COMPOSTABLES = new HashMap<>();
 
     private final String modid;
@@ -133,17 +134,18 @@ public class RegistryHandler
         TREE_DECORATOR_TYPES = DeferredRegister.create(ForgeRegistries.TREE_DECORATOR_TYPES, modid);
         WORLD_CARVERS = DeferredRegister.create(ForgeRegistries.WORLD_CARVERS, modid);
         WORLD_TYPES = DeferredRegister.create(ForgeRegistries.WORLD_TYPES, modid);
-
-        boatEntityType = ENTITIES.register("boat", () -> EntityType.Builder.<Boat>of(RegistryBoat.EntityBoat::new, MobCategory.MISC)
-                .sized(1.375f, 0.5625f)
-                .clientTrackingRange(10)
-                .build("boat"));
     }
 
     public RegistryBlock register(String blockName, RegistryBlock.Builder blockBuilder) { return blockBuilder.build(blockName, BLOCKS, ITEMS); }
     public RegistryItem register(String itemName, RegistryItem.Builder itemBuilder) { return itemBuilder.build(itemName, ITEMS); }
     public RegistryMetal register(String metalName, RegistryMetal.Builder metalBuilder) { return metalBuilder.build(metalName, BLOCKS, ITEMS); }
     public RegistryOre register(String oreName, RegistryOre.Builder oreBuilder) { return oreBuilder.build(oreName, BLOCKS, ITEMS); }
+    public <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> type_builder, EntityRendererProvider<T> render){
+        EntityType<T> type = type_builder.build(name);
+        ENTITIES.register(name,()-> type);
+        HTUCore.RENDER_HANDLER.setEntityRenderer(type,render);
+        return type;
+    };
 
     public void register(IEventBus bus)
     {
@@ -186,8 +188,6 @@ public class RegistryHandler
         for (Supplier<Item> item : CUSTOM_COMPOSTABLES.keySet())
             ComposterBlock.COMPOSTABLES.put(item.get(), CUSTOM_COMPOSTABLES.get(item));
     }
-
-    public RegistryObject<EntityType<Boat>> getBoatEntityType() { return boatEntityType; }
 
     public CreativeModeTab registerCreativeTab(Item icon)
     {
