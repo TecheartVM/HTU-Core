@@ -142,10 +142,12 @@ public class RegistryHandler
     public RegistryItem register(String itemName, RegistryItem.Builder itemBuilder) { return itemBuilder.build(itemName, ITEMS); }
     public RegistryMetal register(String metalName, RegistryMetal.Builder metalBuilder) { return metalBuilder.build(metalName, BLOCKS, ITEMS); }
     public RegistryOre register(String oreName, RegistryOre.Builder oreBuilder) { return oreBuilder.build(oreName, BLOCKS, ITEMS); }
-    public <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> type_builder, EntityRendererProvider<T> render){
-        EntityType<T> type = type_builder.build(name);
-        ENTITIES.register(name,()-> type);
-        HTUCore.RENDER_HANDLER.setEntityRenderer(type,render);
+    public RegistryWood register(String woodName, RegistryWood.Builder woodBuilder) { return woodBuilder.build(woodName, modid, this, BLOCKS, ITEMS, BLOCK_ENTITIES, ENTITIES); }
+    public <T extends Entity> EntityType<T> register(String entityName, EntityType.Builder<T> typeBuilder, EntityRendererProvider<T> renderer)
+    {
+        EntityType<T> type = typeBuilder.build(entityName);
+        ENTITIES.register(entityName,()-> type);
+        HTUCore.RENDER.setEntityRenderer(type,renderer);
         return type;
     };
     public <T extends BlockEntity> BlockEntityType<T> register(String name, BlockEntityType.BlockEntitySupplier<T> sup, BlockEntityRendererProvider<T> render, Block... blocks){
