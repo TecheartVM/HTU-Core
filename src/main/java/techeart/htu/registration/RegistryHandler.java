@@ -1,5 +1,6 @@
 package techeart.htu.registration;
 
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.sounds.SoundEvent;
@@ -7,7 +8,6 @@ import net.minecraft.stats.StatType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
@@ -16,7 +16,6 @@ import net.minecraft.world.entity.decoration.Motive;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.schedule.Schedule;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -27,6 +26,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
@@ -42,12 +42,14 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.world.ForgeWorldType;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DataSerializerEntry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import techeart.htu.HTUCore;
-import techeart.htu.registration.units.*;
+import techeart.htu.registration.units.RegistryBlock;
+import techeart.htu.registration.units.RegistryItem;
+import techeart.htu.registration.units.RegistryMetal;
+import techeart.htu.registration.units.RegistryOre;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -144,6 +146,12 @@ public class RegistryHandler
         EntityType<T> type = type_builder.build(name);
         ENTITIES.register(name,()-> type);
         HTUCore.RENDER_HANDLER.setEntityRenderer(type,render);
+        return type;
+    };
+    public <T extends BlockEntity> BlockEntityType<T> register(String name, BlockEntityType.BlockEntitySupplier<T> sup, BlockEntityRendererProvider<T> render, Block... blocks){
+        BlockEntityType<T> type = BlockEntityType.Builder.of(sup,blocks).build(null);
+        BLOCK_ENTITIES.register(name,()-> type);
+        HTUCore.RENDER_HANDLER.addBlockEntityRenderer(type,render);
         return type;
     };
 

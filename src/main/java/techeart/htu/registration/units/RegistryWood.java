@@ -2,9 +2,7 @@ package techeart.htu.registration.units;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
-import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
@@ -18,7 +16,6 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
 import techeart.htu.HTUCore;
 import techeart.htu.objects.WoodStuff.*;
-import techeart.htu.utils.RenderHandler;
 import techeart.htu.registration.RegistryHandler;
 
 public class RegistryWood
@@ -191,7 +188,7 @@ public class RegistryWood
                 sign = new RegistrySign(woodType, planksProps, tab, br, ir, ber);
                 boat_item = new RegistryItem.Builder()
                         .withSupplier(()-> new RegistryBoat.ItemBoat("none",HTUCore.BOAT_TYPE))
-                        .build("name",ir);
+                        .build("boat_" + name,ir);
             }
 
             final RegistryBlock strippedLog1 = strippedLog;
