@@ -46,10 +46,7 @@ import net.minecraftforge.registries.DataSerializerEntry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import techeart.htu.HTUCore;
-import techeart.htu.registration.units.RegistryBlock;
-import techeart.htu.registration.units.RegistryItem;
-import techeart.htu.registration.units.RegistryMetal;
-import techeart.htu.registration.units.RegistryOre;
+import techeart.htu.registration.units.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -153,7 +150,7 @@ public class RegistryHandler
     public <T extends BlockEntity> BlockEntityType<T> register(String name, BlockEntityType.BlockEntitySupplier<T> sup, BlockEntityRendererProvider<T> render, Block... blocks){
         BlockEntityType<T> type = BlockEntityType.Builder.of(sup,blocks).build(null);
         BLOCK_ENTITIES.register(name,()-> type);
-        HTUCore.RENDER_HANDLER.addBlockEntityRenderer(type,render);
+        HTUCore.RENDER.addBlockEntityRenderer(type,render);
         return type;
     };
 
