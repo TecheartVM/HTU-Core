@@ -7,7 +7,6 @@ import net.minecraft.stats.StatType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
@@ -16,7 +15,6 @@ import net.minecraft.world.entity.decoration.Motive;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.schedule.Schedule;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -42,7 +40,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.world.ForgeWorldType;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DataSerializerEntry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -140,10 +137,12 @@ public class RegistryHandler
     public RegistryItem register(String itemName, RegistryItem.Builder itemBuilder) { return itemBuilder.build(itemName, ITEMS); }
     public RegistryMetal register(String metalName, RegistryMetal.Builder metalBuilder) { return metalBuilder.build(metalName, BLOCKS, ITEMS); }
     public RegistryOre register(String oreName, RegistryOre.Builder oreBuilder) { return oreBuilder.build(oreName, BLOCKS, ITEMS); }
-    public <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> type_builder, EntityRendererProvider<T> render){
-        EntityType<T> type = type_builder.build(name);
-        ENTITIES.register(name,()-> type);
-        HTUCore.RENDER_HANDLER.setEntityRenderer(type,render);
+    public RegistryWood register(String woodName, RegistryWood.Builder woodBuilder) { return woodBuilder.build(woodName, modid, this, BLOCKS, ITEMS, BLOCK_ENTITIES, ENTITIES); }
+    public <T extends Entity> EntityType<T> register(String entityName, EntityType.Builder<T> typeBuilder, EntityRendererProvider<T> renderer)
+    {
+        EntityType<T> type = typeBuilder.build(entityName);
+        ENTITIES.register(entityName,()-> type);
+        HTUCore.RENDER.setEntityRenderer(type,renderer);
         return type;
     };
 

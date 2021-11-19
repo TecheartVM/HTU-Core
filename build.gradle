@@ -56,7 +56,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                htucore {
+                hightechuniverse {
                     source sourceSets.main
                 }
             }
@@ -78,7 +78,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                htucore {
+                hightechuniverse {
                     source sourceSets.main
                 }
             }
@@ -103,7 +103,7 @@ minecraft {
             args '--mod', "${modid}", '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                htucore {
+                hightechuniverse {
                     source sourceSets.main
                 }
             }

@@ -2,9 +2,7 @@ package techeart.htu.registration.units;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
-import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
@@ -18,11 +16,14 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
 import techeart.htu.HTUCore;
 import techeart.htu.objects.WoodStuff.*;
-import techeart.htu.utils.RenderHandler;
 import techeart.htu.registration.RegistryHandler;
 
 public class RegistryWood
 {
+    //TODO: fix fence connections, slab collision, sign screen/model crash,
+    // remove button and plate collision
+    // boat isn't displayed in creative tabs
+
     private final WoodType type;
 
     private final RegistryBlock log;
@@ -119,7 +120,7 @@ public class RegistryWood
                                   DeferredRegister<BlockEntityType<?>> ber, DeferredRegister<EntityType<?>> er
         )
         {
-            WoodType woodType = WoodType.create(modid + ":" + name);
+            WoodType woodType = WoodType.create(name); //possibly wood type name should also include mod id, but it cause some troubles with it's processing
 
             BlockBehaviour.Properties planksProps = BlockBehaviour.Properties.of(Material.WOOD, coreColor).strength(strength).sound(woodSound);
             BlockBehaviour.Properties saplingProps = BlockBehaviour.Properties.of(Material.PLANT).noCollission().randomTicks().instabreak().sound(SoundType.GRASS);
@@ -246,12 +247,12 @@ public class RegistryWood
 
     private void initRenderers()
     {
-        HTUCore.RENDER_HANDLER.setBlockRenderType(door, RenderType.cutout());
-        HTUCore.RENDER_HANDLER.setBlockRenderType(trapdoor, RenderType.cutout());
+        HTUCore.RENDER.setBlockRenderType(door, RenderType.cutout());
+        HTUCore.RENDER.setBlockRenderType(trapdoor, RenderType.cutout());
         if (sapling != null)
         {
-            HTUCore.RENDER_HANDLER.setBlockRenderType(sapling, RenderType.cutout());
-            HTUCore.RENDER_HANDLER.setBlockRenderType(saplingPotted, RenderType.cutout());
+            HTUCore.RENDER.setBlockRenderType(sapling, RenderType.cutout());
+            HTUCore.RENDER.setBlockRenderType(saplingPotted, RenderType.cutout());
         }
 //        HTUCore.RENDER_HANDLER.setBlockEntityRenderer(sign.getBlockEntityType(), SignRenderer::new);
     }
